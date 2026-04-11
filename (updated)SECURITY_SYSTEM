@@ -11,7 +11,7 @@ fi
 pwd_f="/etc/project_auth"
 mt_f="/etc/project_auth_meta"
  
-# Initialize system if credentials don't exist
+# Initial Setting of Password for the System
 if [ ! -f "$pwd_f" ]; then
     echo "--- SYSTEM INITIALIZATION: Set Admin Password ---"
     read -s -p "Create New Admin Password: " p; echo
@@ -51,14 +51,14 @@ for i in {1..3}; do
             done
  
             if [ "$confirmed" = false ]; then
-                echo "Confirmation failed. Password rotation aborted."
+                echo "Confirmation failed. Password renewal failed."
                 exit 1
             fi
  
             read -s -p "Enter New Password: " n; echo
             openssl passwd -6 "$n" > "$pwd_f"
             date +%s > "$mt_f"
-            echo "Password successfully rotated."
+            echo "Password successfully renewed."
         fi
         exit 0 # Access Granted
     fi
