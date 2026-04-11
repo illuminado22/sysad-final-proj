@@ -1,7 +1,7 @@
 #!/bin/bash
 # Security System: Password Authorization & Aging
  
-# Ensure script is run as root for /etc/ access
+# Forced Root Access
 if [ "$EUID" -ne 0 ]; then 
     echo "Error: Authorization system must be run with sudo/root."
     exit 1 
@@ -29,12 +29,16 @@ for i in {1..3}; do
     salt=$(cut -d '$' -f3 "$pwd_f")
     if [ "$(openssl passwd -6 -salt "$salt" "$in")" == "$(cat "$pwd_f")" ]; then
         
-        # Password Expiration Logic (10-Minute Policy for Demo)
-        mins=$(( ($(date +%s) - $(cat "$mt_f")) / 60 ))
-        if [ $mins -ge 10 ]; then
-            echo "STATUS: Password Expired (10-minute demo rule)."
+        # Password Expiration Logic
+        # FOR TEN MINS DEMO
+        #mins=$(( ($(date +%s) - $(cat "$mt_f")) / 60 ))
+        #if [ $mins -ge 10 ]; then
+
+         days=$(cut(( ($(date +%s) - $(cat "$mt_f")) / 86400 ))
+         if [ $days -ge 7 ]; then
+            echo "Warning: Password Expired. The System is Insecure, Files may be Compromised"
  
-            # Require re-confirmation of the expired password before allowing rotation
+            # Require re-confirmation
             confirmed=false
             for j in {1..3}; do
                 read -s -p "Re-enter Expired Password to Confirm: " confirm; echo
