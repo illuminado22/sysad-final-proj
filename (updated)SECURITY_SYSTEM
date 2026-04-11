@@ -7,7 +7,7 @@ if [ "$EUID" -ne 0 ]; then
     exit 1 
 fi
  
-# System-wide paths for credentials (portable across all Linux installs)
+# System-wide paths for credentials
 pwd_f="/etc/project_auth"
 mt_f="/etc/project_auth_meta"
  
