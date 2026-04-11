@@ -1,107 +1,46 @@
 #!/bin/bash
-#Security System
+# Security System: Password Authorization & Aging
 
-set -euo pipefail
-
-#Forcing Root Access
-if [ "$EUID" -ne 0 ]; then
-    echo "This must be run as root"
-    exit 1
+# Ensure script is run as root for /etc/ access
+if [ "$EUID" -ne 0 ]; then 
+    echo "Error: Authorization system must be run with sudo/root."
+    exit 1 
 fi
 
-#Variables
-psswrd_file="/etc/project_auth"
-mt_file="/etc/project_auth_meta"
-max=7
+# System-wide paths for credentials (portable across all Linux installs)
+pwd_f="/etc/project_auth"
+mt_f="/etc/project_auth_meta"
 
-umask 077
+# Initialize system if credentials don't exist
+if [ ! -f "$pwd_f" ]; then
+    echo "--- SYSTEM INITIALIZATION: Set Admin Password ---"
+    read -s -p "Create New Admin Password: " p; echo
+    openssl passwd -6 "$p" > "$pwd_f"
+    date +%s > "$mt_f"
+    chmod 600 "$pwd_f" "$mt_f"
+    echo "Password secured in $pwd_f"
+fi
 
-#Creating Initial Password for the System 
-ini_password() {
-    if [ ! -f "$psswrd_file" ]; then
-        echo "Warning!: No system password yet. Please create one."
-        read -s -p "Enter your new password: " newpass
-        echo 
-
-# Password
-        specials=$(echo "$newpass" | grep -o '[^a-zA-Z0-9]' | wc -l)
-        if ! [[ -n "$newpass" && ${#newpass} -ge 6 && "$newpass" =~ [A-Z] && "$newpass" =~ [0-9] && $specials -eq 1 ]]; then
-            echo "Password must be at least 6 characters, include one uppercase letter, one number, and exactly one special character."
-            exit 1
-        fi
-                openssl passwd -6 "$newpass" > "$psswrd_file"
-                date +%s > "$mt_file"
-                chmod 600 "$psswrd_file" "$mt_file"
-                unset newpass specials
-                echo "System Password Successfully Assigned."
-    fi      
-}
-
-#Password Aging or Expiration
-psswrd_expiration() {
-    if [ -f "$mt_file" ]; then
-        last_change=$(cat "$mt_file")
-        since=$(( ( $(date +%s) - last_change ) / 86400 ))
-        if [ $since -ge $max ]; then 
-            echo "WARNING: The System is Insecure, Files and Data may be Compromised"
-            renew_psswrd
-        fi
-    fi
-}
-
-#User Authentication
-authenticate() {
-    max_attempts=3
-    attempt=0
-
-    while [ $attempt -lt $max_attempts ]; do 
-        echo -n "Enter the System Password: "
-        read -s input
-        echo
-
-    if [[ -z "$input" ]]; then
-            echo "Password cannot be empty."
-            continue
-    fi
-       
-    stored_hash=$(cat "$psswrd_file")
-
-    salt=$(echo "$stored_hash" | cut -d '$' -f3)
-    input_hash=$(openssl passwd -6 -salt "$salt" "$input")
-
-     if [ "$input_hash" = "$stored_hash" ]; then
-            echo "Access Granted."
-            unset input input_hash   
-            psswrd_expiration
-            return
-        else
-            echo "Incorrect password."
-            attempt=$((attempt + 1))   
-        fi
-    done
-
-    echo "Too many failed attempts. Access denied."   
-    exit 1
-}
-
-#Password Renewal
-renew_psswrd() {
-    echo "Renew the system Password: "
-    read -s -p "Enter the New Password: " newpass 
-    echo
-
-    specials=$(echo "$newpass" | grep -o '[^a-zA-Z0-9]' | wc -l)
-    if ! [[ -n "$newpass" && ${#newpass} -ge 6 && "$newpass" =~ [A-Z] && "$newpass" =~ [0-9] && $specials -eq 1 ]]; then
-        echo "Password must be at least 6 characters, include one uppercase letter, one number, and exactly one special character."
-        return
-    fi
+# 3-Attempt Login Policy
+for i in {1..3}; do
+    read -s -p "Enter Admin Password: " in; echo
     
-    openssl passwd -6 "$newpass" > "$psswrd_file" 
-    date +%s > "$mt_file"
-    chmod 600 "$psswrd_file" "$mt_file"
-    unset newpass specials
-    echo "Password Successfully Renewed."
-}
+    # Extract salt and verify SHA-512 hash
+    salt=$(cut -d '$' -f3 "$pwd_f")
+    if [ "$(openssl passwd -6 -salt "$salt" "$in")" == "$(cat "$pwd_f")" ]; then
+        
+        # Password Expiration Logic (7-Day Policy)
+        days=$(( ($(date +%s) - $(cat "$mt_f")) / 86400 ))
+        if [ $days -ge 7 ]; then
+            echo "STATUS: Password Expired (7-day rule)."
+            read -s -p "Enter New Password: " n; echo
+            openssl passwd -6 "$n" > "$pwd_f"
+            date +%s > "$mt_f"
+            echo "Password successfully rotated."
+        fi
+        exit 0 # Access Granted
+    fi
+    echo "Access Denied. $((3-i)) attempts remaining."
+done
 
-ini_password
-authenticate
+exit 1 # Access Terminated
