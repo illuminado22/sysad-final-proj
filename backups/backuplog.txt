@@ -1,0 +1,42 @@
+2026-04-13 06:01:01, SYSTEM, MONITORING_STARTED, PID 10830
+2026-04-13 06:01:01, SYSTEM, BACKUP_MONITOR_STARTED, PID 10833
+2026-04-13 06:01:12, DUPLICATE, DETECTED, Duplicate of file1.txt found at /home/vboxuser/Documents/sysad-final-proj/monitored_files/file2.txt
+2026-04-13 06:01:12, NOTIFICATION, EMAIL_SENT, check_duplicates --- Duplicate file detected in Watch Directory
+2026-04-13 06:01:29, SYSTEM, BACKUP_MONITOR_STARTED, PID 10882
+[2026-04-13 06:01:44] AUTO-MONITORING CREATED file3.txt
+[2026-04-13 06:01:44] TAMPER DETECTED: MODIFY on /home/vboxuser/Documents/sysad-final-proj/backups/BackupFolder(04-13-2026)/(CREATED)_file3.txt
+[2026-04-13 06:01:44] TAMPER DETECTED: MODIFY on /home/vboxuser/Documents/sysad-final-proj/backups/BackupFolder(04-13-2026)/(CREATED)_file3.txt
+2026-04-13 06:01:44, DUPLICATE, DETECTED, Duplicate of file1.txt found at /home/vboxuser/Documents/sysad-final-proj/monitored_files/file2.txt
+2026-04-13 06:01:44, NOTIFICATION, EMAIL_SENT, backup_monitor --- Backup file was MODIFIED: (CREATED)_file3.txt
+2026-04-13 06:01:44, NOTIFICATION, EMAIL_SENT, backup_monitor --- Backup file was MODIFIED: (CREATED)_file3.txt
+2026-04-13 06:01:44, NOTIFICATION, EMAIL_SENT, check_duplicates --- Duplicate file detected in Watch Directory
+2026-04-13 06:03:17, NOTIFICATION, EMAIL_SENT, backup_recovered --- No deleted backup found for: file3.txt
+2026-04-13 06:09:10, SYSTEM, MONITORING_STARTED, PID 10978
+2026-04-13 06:09:10, SYSTEM, BACKUP_MONITOR_STARTED, PID 10981
+2026-04-13 06:09:34, NOTIFICATION, EMAIL_SENT, backup_recovered --- No deleted backup found for: file3.txt
+2026-04-13 06:13:22, SYSTEM, BACKUP_MONITOR_STARTED, PID 11033
+2026-04-13 06:13:35, SYSTEM, BACKUP_MONITOR_STARTED, PID 11074
+2026-04-13 06:15:14, NOTIFICATION, EMAIL_SENT, backup_recovered --- No deleted backup found for: file3.txt
+2026-04-13 06:16:41, SYSTEM, BACKUP_MONITOR_STARTED, PID 11130
+2026-04-13 06:16:54, DUPLICATE, DETECTED, Duplicate of file1.txt found at /home/vboxuser/Documents/sysad-final-proj/monitored_files/file2.txt
+2026-04-13 06:16:54, NOTIFICATION, EMAIL_SENT, check_duplicates --- Duplicate file detected in Watch Directory
+2026-04-13 06:17:11, SYSTEM, BACKUP_MONITOR_STARTED, PID 11212
+[2026-04-13 06:17:31] AUTO-MONITORING CREATED file3.txt
+[2026-04-13 06:17:32] TAMPER DETECTED: MODIFY on /home/vboxuser/Documents/sysad-final-proj/backups/BackupFolder(04-13-2026)/(CREATED)_file3.txt
+[2026-04-13 06:17:32] TAMPER DETECTED: MODIFY on /home/vboxuser/Documents/sysad-final-proj/backups/BackupFolder(04-13-2026)/(CREATED)_file3.txt
+[2026-04-13 06:17:32] TAMPER DETECTED: MODIFY on /home/vboxuser/Documents/sysad-final-proj/backups/BackupFolder(04-13-2026)/(CREATED)_file3.txt
+[2026-04-13 06:17:32] TAMPER DETECTED: MODIFY on /home/vboxuser/Documents/sysad-final-proj/backups/BackupFolder(04-13-2026)/(CREATED)_file3.txt
+[2026-04-13 06:17:32] TAMPER DETECTED: MODIFY on /home/vboxuser/Documents/sysad-final-proj/backups/BackupFolder(04-13-2026)/(CREATED)_file3.txt
+2026-04-13 06:17:32, DUPLICATE, DETECTED, Duplicate of file1.txt found at /home/vboxuser/Documents/sysad-final-proj/monitored_files/file3.txt
+2026-04-13 06:17:32, DUPLICATE, DETECTED, Duplicate of file1.txt found at /home/vboxuser/Documents/sysad-final-proj/monitored_files/file2.txt
+2026-04-13 06:17:32, NOTIFICATION, EMAIL_SENT, backup_monitor --- Backup file was MODIFIED: (CREATED)_file3.txt
+2026-04-13 06:17:32, NOTIFICATION, EMAIL_SENT, backup_monitor --- Backup file was MODIFIED: (CREATED)_file3.txt
+2026-04-13 06:17:32, NOTIFICATION, EMAIL_SENT, check_duplicates --- Duplicate file detected in Watch Directory
+2026-04-13 06:17:32, NOTIFICATION, EMAIL_SENT, backup_monitor --- Backup file was MODIFIED: (CREATED)_file3.txt
+2026-04-13 06:17:32, NOTIFICATION, EMAIL_SENT, backup_monitor --- Backup file was MODIFIED: (CREATED)_file3.txt
+2026-04-13 06:17:32, NOTIFICATION, EMAIL_SENT, backup_monitor --- Backup file was MODIFIED: (CREATED)_file3.txt
+2026-04-13 06:19:41, NOTIFICATION, EMAIL_SENT, backup_recovered --- No deleted backup found for: file3.txt
+2026-04-13 06:20:04, SYSTEM, MONITORING_STARTED, PID 11337
+2026-04-13 06:20:04, SYSTEM, BACKUP_MONITOR_STARTED, PID 11340
+2026-04-13 06:21:39, SYSTEM, BACKUP_MONITOR_STARTED, PID 11420
+2026-04-13 06:21:49, SYSTEM, MONITORING_STOPPED, inotifywait stopped

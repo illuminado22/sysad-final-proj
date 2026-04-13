@@ -9,7 +9,7 @@ fi
 pwd_f="/etc/project_auth"
 mt_f="/etc/project_auth_meta"
  
-NOTIFY_EMAIL="nikkandoy9@gmail.com"
+NOTIFY_EMAIL="grouptest1717@gmail.com"
  
 # --- FOR TESTING: 5 minutes = 300 seconds ---
 EXPIRY_SECONDS=300
@@ -27,10 +27,24 @@ Detail   : Admin password has expired (${minutes_since} minutes old - 5 minute t
 Host     : $(hostname)
 =============================="
  
-    echo "$body" | msmtp -a gmail "$NOTIFY_EMAIL" 2>/dev/null
+    echo "$body" | msmtp -a gmail "$NOTIFY_EMAIL"
     echo "NOTIFICATION sent to $NOTIFY_EMAIL --- password expired"
 }
- 
+ send_breach_email() {
+    local timestamp
+    timestamp=$(date "+%Y-%m-%d %H:%M:%S")
+
+    local body="SECURITY ALERT
+==============================
+Time     : $timestamp
+Function : unauthorized_access
+Detail   : Multiple failed login attempts detected
+Host     : $(hostname)
+=============================="
+
+    echo "$body" | msmtp -a gmail "$NOTIFY_EMAIL"
+    echo "NOTIFICATION sent to $NOTIFY_EMAIL --- unauthorized access"
+}
 if [ ! -f "$pwd_f" ]; then
     echo "--- SYSTEM INITIALIZATION: Set Admin Password ---"
     read -s -p "Create New Admin Password: " p; echo
@@ -39,7 +53,8 @@ if [ ! -f "$pwd_f" ]; then
     chmod 600 "$pwd_f" "$mt_f"
     echo "Password secured in $pwd_f"
 fi
- 
+
+touch /var/log/project_security.log 2>/dev/null 
 for i in {1..3}; do
     read -s -p "Enter Admin Password: " in; echo
     
@@ -56,6 +71,13 @@ for i in {1..3}; do
         exit 0
     fi
     echo "Access Denied. $((3-i)) attempts remaining."
+
+# Trigger alert only on final failed attempt
+if [ "$i" -eq 3 ]; then
+    send_breach_email
+    
+    echo "$(date): UNAUTHORIZED ACCESS ATTEMPT" >> /var/log/project_security.log
+fi
 done
  
 exit 1

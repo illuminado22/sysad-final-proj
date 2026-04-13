@@ -16,7 +16,7 @@ monitoring_PID=""
 backup_monitor_PID=""
  
 #msmtp is the tool here
-NOTIFY_EMAIL="nikkandoy9@gmail.com"
+NOTIFY_EMAIL="grouptest1717@gmail.com"
  
 #set the permission of any new files or directories. 
 umask 077
@@ -36,7 +36,7 @@ format_report() {
  
     if [ -n "$extra_info" ]; then
         echo "------------------------------"
-        echo "$extra_info"
+        echo -e "$extra_info"
     fi
  
     echo "=============================="
@@ -240,7 +240,8 @@ check_duplicates() {
     echo "DUPLICATE CHECK scanning: $location_label"
  
     declare -A checksum_map
- 
+    local extra_info=""
+
     while IFS= read -r -d '' filepath; do
         local filename
         filename=$(basename "$filepath")
@@ -256,10 +257,10 @@ check_duplicates() {
             local original="${checksum_map[$checksum]}"
             local timestamp
             timestamp=$(date "+%Y-%m-%d %H:%M:%S")
- 
-            echo "DUPLICATE FOUND in $location_label:"
-            echo "  Original : $original"
-            echo "  Duplicate: $filepath"
+
+            extra_info+="Location : $location_label\n"
+            extra_info+="Original : $original\n"
+            extra_info+="Duplicate: $filepath\n\n"
  
             log_activity "DUPLICATE" "DETECTED" "Duplicate of $(basename "$original") found at $filepath"
  
@@ -275,7 +276,11 @@ check_duplicates() {
     if [ "$duplicates_found" -eq 0 ]; then
         echo "DUPLICATE CHECK No duplicates found in $location_label. All good!"
     else
-        echo "DUPLICATE CHECK Found $duplicates_found duplicate(s) in $location_label. Notification sent."
+        echo "DUPLICATE CHECK Found $duplicates_found duplicate(s) in $location_label."
+
+        send_notification "check_duplicates" \
+        "Duplicate file detected in $location_label" \
+        "$extra_info"
     fi
 }
  

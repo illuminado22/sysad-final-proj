@@ -1,6 +1,6 @@
 #!/bin/bash
 # Main System Master Controller - SysAd Project
- 
+ NOTIFY_EMAIL="grouptest1717@gmail.com"
 source "$(dirname "$0")/backup_system.sh"
  
 echo "Initializing Project System..."
@@ -37,12 +37,13 @@ while true; do
             auto_cleanup
             echo "Cleanup check complete." ;;
         2)
-            if bash "$(dirname "$0")/security_system.sh"; then
+            if sudo bash "$(dirname "$0")/security_system.sh"; then
                 echo "Access Granted."
                 ls -R "$main_backup"
             else
                 echo "$(date): SECURITY BREACH ATTEMPT" >> "$main_backup/alerts.log"
                 echo "ALERT: Breach attempt has been logged."
+                echo "SECURITY ALERT: Unauthorized access attempt on $(hostname) at $(date)" | msmtp -a gmail "$NOTIFY_EMAIL"
             fi ;;
         3)
             echo "--- BACKUP LOGS ---"
@@ -72,6 +73,7 @@ while true; do
                 chmod 600 /etc/project_auth /etc/project_auth_meta
                 unset newpass specials
                 echo "Password successfully renewed."
+                echo "INFO: Admin password was changed on $(hostname) at $(date)" | msmtp -a gmail "$NOTIFY_EMAIL"
                 log_activity "SECURITY" "PASSWORD_RENEWED" "Admin password was changed"
             fi ;;
         7)
