@@ -45,6 +45,8 @@ for i in {1..3}; do
         # Password Expiration Logic (10 mins demo)
         mins=$(( ($(date +%s) - $(cat "$mt_f")) / 60 ))
         if [ $mins -ge 10 ]; then
+        #days=$(( ($(date +%s) - $(cat "$mt_f")) / 86400 ))
+        #if [ $days -ge 7 ]; then
             echo "Warning: Password Expired. The System is Insecure, Files may be Compromised"
  
             confirmed=false
