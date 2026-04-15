@@ -29,15 +29,29 @@ fi
 # System-wide paths for credentials
 pwd_f="/etc/project_auth"
 mt_f="/etc/project_auth_meta"
+
+# Regex pattern for password validation
+# User password must have 6+ chars, 1 uppercase, 1 digit, and end with special character
+regex='^.{6,}[^a-zA-Z0-9]$'
  
 # Initial Setting of Password for the System
 if [ ! -f "$pwd_f" ]; then
     echo "--- SYSTEM INITIALIZATION: Set Admin Password ---"
-    read -s -p "Create New Admin Password: " p; echo
-    openssl passwd -6 "$p" > "$pwd_f"
-    date +%s > "$mt_f"
-    chmod 600 "$pwd_f" "$mt_f"
-    echo "Password secured in $pwd_f"
+    
+    while true; do
+        read -s -p "Create New Admin Password: " p; echo
+        
+        if [[ "$p" =~ $regex ]]; then
+            openssl passwd -6 "$p" > "$pwd_f"
+            date +%s > "$mt_f"
+            chmod 600 "$pwd_f" "$mt_f"
+            echo "Password secured in $pwd_f"
+            break
+        else
+            echo "Invalid password."
+            echo "Must be at least 6 characters, include 1 uppercase, 1 number, and exactly 1 special character."
+        fi
+    done
 fi
  
 # 3-Attempt Login Policy
@@ -49,7 +63,7 @@ for i in {1..3}; do
     if [ "$(openssl passwd -6 -salt "$salt" "$in")" == "$(cat "$pwd_f")" ]; then
         
         # Password Expiration Logic
-        # FOR TEN MINS DEMO
+        # FOR ONE MIN DEMO
         mins=$(( ($(date +%s) - $(cat "$mt_f")) / 60 ))
         if [ $mins -ge 1 ]; then
         #days=$(( ($(date +%s) - $(cat "$mt_f")) / 86400 ))
@@ -73,11 +87,21 @@ for i in {1..3}; do
                 echo "Confirmation failed. Password renewal failed."
                 exit 1
             fi
- 
-            read -s -p "Enter New Password: " n; echo
-            openssl passwd -6 "$n" > "$pwd_f"
-            date +%s > "$mt_f"
-            echo "Password successfully renewed."
+
+            # NEW PASSWORD WITH REGEX CHECK
+            while true; do
+                read -s -p "Enter New Password: " n; echo
+                
+                if [[ "$n" =~ $regex ]]; then
+                    openssl passwd -6 "$n" > "$pwd_f"
+                    date +%s > "$mt_f"
+                    echo "Password successfully renewed."
+                    break
+                else
+                    echo "Invalid password."
+                    echo "Must be at least 6 characters, include 1 uppercase, 1 number, and exactly 1 special character."
+                fi
+            done
         fi
         exit 0 # Access Granted
     fi
