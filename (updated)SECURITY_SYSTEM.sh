@@ -1,6 +1,25 @@
 #!/bin/bash
 # Security System: Password Authorization & Aging
  
+NOTIFY_EMAIL="nikkandoy9@gmail.com"
+ 
+send_expiry_email() {
+    local mins="$1"
+    local timestamp
+    timestamp=$(date "+%Y-%m-%d %H:%M:%S")
+ 
+    local body="Backup System Report
+==============================
+Time     : $timestamp
+Function : password_expiry
+Detail   : Admin password has expired (${mins} minutes old)
+Host     : $(hostname)
+=============================="
+ 
+    echo "$body" | msmtp -a gmail "$NOTIFY_EMAIL" 2>/dev/null
+    echo "NOTIFICATION sent to $NOTIFY_EMAIL --- password expired"
+}
+ 
 # Forced Root Access
 if [ "$EUID" -ne 0 ]; then 
     echo "Error: Authorization system must be run with sudo/root."
@@ -32,10 +51,11 @@ for i in {1..3}; do
         # Password Expiration Logic
         # FOR TEN MINS DEMO
         mins=$(( ($(date +%s) - $(cat "$mt_f")) / 60 ))
-        if [ $mins -ge 10 ]; then
+        if [ $mins -ge 1 ]; then
         #days=$(( ($(date +%s) - $(cat "$mt_f")) / 86400 ))
         #if [ $days -ge 7 ]; then
             echo "Warning: Password Expired. The System is Insecure, Files may be Compromised"
+            send_expiry_email "$mins"
  
             # Require re-confirmation
             confirmed=false
